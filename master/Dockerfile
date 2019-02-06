@@ -2,7 +2,7 @@ FROM postgres:11
 
 RUN apt-get update; apt-get install -y sudo mc
 
-COPY master/initdb/* ssh/master.prv ssh/master.pub /docker-entrypoint-initdb.d/
+COPY master/initdb/* /docker-entrypoint-initdb.d/
 
 RUN ls docker-entrypoint-initdb.d/
 
@@ -10,12 +10,11 @@ ENV BARMAN_SERVER db-barman
 
 RUN useradd -m petitions
 
-RUN mkdir -p /var/lib/postgresql/.ssh && \
-    chmod 0700 /var/lib/postgresql/.ssh 
+RUN mkdir -p /var/lib/postgresql/.ssh
 
-#ADD ssh/master.prv ~postgres/.ssh/id_rsa
-#ADD ssh/master.pub ~postgres/.ssh/id_rsa.pub
+ADD ssh/master.prv /var/lib/postgresql/.ssh/id_rsa
+ADD ssh/master.pub /var/lib/postgresql/.ssh/id_rsa.pub
 
-
-#RUN chmod -R 600 ~postgres/.ssh/* && \
-#    chown -R postgres.postgres ~postgres/.ssh
+RUN chmod 0700 ~postgres/.ssh && \
+    chmod -R 600 ~postgres/.ssh/* && \
+    chown -R postgres.postgres ~postgres/.ssh
