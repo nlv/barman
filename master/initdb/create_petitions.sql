@@ -1,0 +1,3 @@
+CREATE DATABASE petitions;
+CREATE USER petitions;
+GRANT ALL PRIVILEGES ON DATABASE petitions TO petitions;
