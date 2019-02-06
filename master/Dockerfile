@@ -1,6 +1,6 @@
 FROM postgres:11
 
-RUN apt-get update; apt-get install -y sudo mc
+RUN apt-get update; apt-get install -y sudo mc iputils-ping ssh openssh-server
 
 COPY master/initdb/* /docker-entrypoint-initdb.d/
 
@@ -18,3 +18,9 @@ ADD ssh/master.pub /var/lib/postgresql/.ssh/id_rsa.pub
 RUN chmod 0700 ~postgres/.ssh && \
     chmod -R 600 ~postgres/.ssh/* && \
     chown -R postgres.postgres ~postgres/.ssh
+
+EXPOSE 22
+
+
+
+
