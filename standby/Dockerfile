@@ -8,13 +8,12 @@ RUN ls docker-entrypoint-initdb.d/
 
 ENV BARMAN_SERVER db-barman
 
-RUN useradd -m petitions
-
 RUN mkdir -p /var/lib/postgresql/.ssh
 
-ADD ssh/master.prv /var/lib/postgresql/.ssh/id_rsa
-ADD ssh/master.pub /var/lib/postgresql/.ssh/id_rsa.pub
+ADD ssh/standby.prv /var/lib/postgresql/.ssh/id_rsa
+ADD ssh/standby.pub /var/lib/postgresql/.ssh/id_rsa.pub
 
 RUN chmod 0700 ~postgres/.ssh && \
     chmod -R 600 ~postgres/.ssh/* && \
     chown -R postgres.postgres ~postgres/.ssh
+
