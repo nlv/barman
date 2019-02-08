@@ -14,10 +14,14 @@ ADD ssh/master.pub /tmp
 ADD ssh/standby.pub /tmp
 
 RUN mkdir -p ~barman/.ssh && \
-    chmod 0700 ~barman/.ssh && \
     cat /tmp/master.pub >> ~barman/.ssh/authorized_keys && \
-    cat /tmp/standby.pub >> ~barman/.ssh/authorized_keys && \
-    chmod 600 ~barman/.ssh/authorized_keys && \
+    cat /tmp/standby.pub >> ~barman/.ssh/authorized_keys 
+
+ADD ssh/barman.prv /home/barman/.ssh/id_rsa
+ADD ssh/barman.pub /home/barman/.ssh/id_rsa.pub
+
+RUN chmod 0700 ~barman/.ssh && \
+    chmod -R 600 ~barman/.ssh/* && \
     chown -R barman.barman ~barman/.ssh
 
 EXPOSE 22

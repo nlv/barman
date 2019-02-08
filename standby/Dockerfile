@@ -12,8 +12,11 @@ RUN mkdir -p /var/lib/postgresql/.ssh
 
 ADD ssh/standby.prv /var/lib/postgresql/.ssh/id_rsa
 ADD ssh/standby.pub /var/lib/postgresql/.ssh/id_rsa.pub
+ADD ssh/barman.pub /tmp
 
-RUN chmod 0700 ~postgres/.ssh && \
+RUN cat /tmp/barman.pub >> ~postgres/.ssh/authorized_keys && \
+    chmod 0700 ~postgres/.ssh && \
     chmod -R 600 ~postgres/.ssh/* && \
     chown -R postgres.postgres ~postgres/.ssh
+
 
