@@ -17,12 +17,19 @@ RUN mkdir -p ~barman/.ssh && \
     cat /tmp/master.pub >> ~barman/.ssh/authorized_keys && \
     cat /tmp/standby.pub >> ~barman/.ssh/authorized_keys 
 
-ADD ssh/barman.prv /home/barman/.ssh/id_rsa
-ADD ssh/barman.pub /home/barman/.ssh/id_rsa.pub
+ADD ssh/barman.prv /var/lib/barman/.ssh/id_rsa
+ADD ssh/barman.pub /var/lib/barman/.ssh/id_rsa.pub
 
 RUN chmod 0700 ~barman/.ssh && \
     chmod -R 600 ~barman/.ssh/* && \
     chown -R barman.barman ~barman/.ssh
+
+ADD barman/barman.conf /etc/barman.conf
+
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+
+VOLUME /var/lib/barman
+VOLUME /var/log/barman
 
 EXPOSE 22
 

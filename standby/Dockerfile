@@ -19,4 +19,5 @@ RUN cat /tmp/barman.pub >> ~postgres/.ssh/authorized_keys && \
     chmod -R 600 ~postgres/.ssh/* && \
     chown -R postgres.postgres ~postgres/.ssh
 
+VOLUME /var/lib/postgresql/data
 

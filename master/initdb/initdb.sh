@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "host    all     all     $BARMAN_SERVER        trust" >> /var/lib/postgresql/data/pg_hba.conf
+cp /docker-entrypoint-initdb.d/postgresql.conf ~postgres/data
+cp /docker-entrypoint-initdb.d/pg_hba.conf ~postgres/data

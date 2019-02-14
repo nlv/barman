@@ -19,6 +19,12 @@ ADD ssh/barman.pub /tmp
 RUN cat /tmp/barman.pub >> ~postgres/.ssh/authorized_keys && \
     chmod 0700 ~postgres/.ssh && \
     chmod -R 600 ~postgres/.ssh/* && \
-    chown -R postgres.postgres ~postgres/.ssh
+    chown -R postgres.postgres ~postgres/.ssh && \
+    chown postgres.postgres /docker-entrypoint-initdb.d/postgresql.conf && \
+    chown postgres.postgres /docker-entrypoint-initdb.d/pg_hba.conf
 
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+
+VOLUME /var/lib/postgresql/data
+VOLUME /var/log/postgresql
 
