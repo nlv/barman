@@ -1,10 +1,12 @@
 FROM postgres:11
 
-RUN apt-get update; apt-get install -y sudo mc iputils-ping ssh openssh-server
+RUN apt-get update; apt-get install -y sudo mc iputils-ping ssh openssh-server curl apt-utils vim
+
+RUN curl https://dl.2ndquadrant.com/default/release/get/deb | sudo bash
+
+RUN apt-get install -y barman-cli
 
 COPY master/initdb/* /docker-entrypoint-initdb.d/
-
-RUN ls docker-entrypoint-initdb.d/
 
 ENV BARMAN_SERVER db-barman
 
@@ -24,6 +26,9 @@ RUN cat /tmp/barman.pub >> ~postgres/.ssh/authorized_keys && \
     chown postgres.postgres /docker-entrypoint-initdb.d/pg_hba.conf
 
 RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+
+# See: https://groups.google.com/forum/#!topic/pgbarman/SLZETx9itVQ
+RUN echo "RemoveIPC=no" >> /etc/systemd/logind.conf 
 
 VOLUME /var/lib/postgresql/data
 VOLUME /var/log/postgresql
