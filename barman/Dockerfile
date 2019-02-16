@@ -1,4 +1,5 @@
-FROM ubuntu
+#FROM ubuntu
+FROM postgres:11
 
 ENV TZ=Asia/Omsk
 ENV LANG ru_RU.utf8

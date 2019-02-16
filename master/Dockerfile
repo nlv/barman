@@ -30,6 +30,16 @@ RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 # See: https://groups.google.com/forum/#!topic/pgbarman/SLZETx9itVQ
 RUN echo "RemoveIPC=no" >> /etc/systemd/logind.conf 
 
+COPY master/docker-entrypoint_.sh /usr/local/bin
+RUN chmod 755 /usr/local/bin/docker-entrypoint_.sh
+RUN ln -s /usr/local/bin/docker-entrypoint_.sh /
+
+
 VOLUME /var/lib/postgresql/data
 VOLUME /var/log/postgresql
+
+ENTRYPOINT ["docker-entrypoint_.sh"]
+EXPOSE 22 5432
+
+CMD ["postgres"]
 
