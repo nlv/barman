@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+  db-master:
+    build: 
+      context: .
+      dockerfile: master/Dockerfile
+    image: nlv/db-master
+    volumes:
+      - dbmaster:/var/lib/postgresql/data
+      - dbmaster_log:/var/log/postgresql
+    networks: 
+      - postgres-barman
+    environment:
+      - POSTGRES_PASSWORD=1
+      - BARMAN_SERVER=db-barman
+  db-barman:
+    build: 
+      context: .
+      dockerfile: barman/Dockerfile
+    image: nlv/db-barman
+    volumes:
+      - dbbarman_var:/var/lib/barman
+      - dbbarman_log:/var/log/barman
+    networks: 
+      - postgres-barman
+
+volumes: 
+  dbmaster:
+  dbmaster_log:
+  dbbarman_var:
+  dbbarman_log:
+
+
+networks:
+  postgres-barman:
+ 
+  
