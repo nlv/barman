@@ -69,6 +69,7 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    ```
    root@db-main:/# psql -U testdb
    testdb=> create table a (a int);
+   testdb=> \dt
 
            List of relations
    Schema | Name | Type  |   Owner   
