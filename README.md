@@ -36,67 +36,67 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
 1. Запускаем скрипт, который создает сеть и тома (хост-машина):
 
-   > # ./init.sh
+   > ./init.sh
 
-2. Создаем docker-образы баз данных и сервиса резервного копирования (хост-машина):
+1. Создаем docker-образы баз данных и сервиса резервного копирования (хост-машина):
 
-   > # ./master-build.sh
-   > # ./standby-build.sh
-   > # ./barman-build.sh
+   > ./master-build.sh
+   > ./standby-build.sh
+   > ./barman-build.sh
 
 # Создание основной баз данных и тестовой таблицы
 
 1. Запускаем сервис основной базы (хост-машина):
 
-  > # ./master-run.sh
+   > ./master-run.sh
 
 1. Заходим в контейнер основной базы (хост-машина):
 
-   > # docker exec -it db-master bash
+   > docker exec -it db-master bash
 
 1. Создаем тестовую таблицу на основной базе (контейнер основной базы):
 
    > root@db-master:/# psql -U petitions
    > petitions=> create table a (a number);
 
-   >          List of relations
-   >  Schema | Name | Type  |   Owner   
-   > --------+------+-------+-----------
-   >  public | a    | table | petitions
+   >           List of relations
+   >   Schema | Name | Type  |   Owner   
+   >  --------+------+-------+-----------
+   >   public | a    | table | petitions
 
 # Снятие резервной копии с основной базы 
 
 1. Заходим в контейнер утилиты barman (хост-машина):
 
-  > # ./barman-run.sh
+   > ./barman-run.sh
 
 1. Заходим под пользователя barman (контейнер barman):
 
-  > root@db-barman:/# sudo -u barman bash
+   > root@db-barman:/# sudo -u barman bash
 
 1. Инициализируем резервное копирование с основной базы (контейнер barman):
 
-  > barman@db-barman:/$ barman switch-wal --force --archive master-db-server
+   > barman@db-barman:/$ barman switch-wal --force --archive master-db-server
 
 1. Проверяем, что все в порядке (контейнер barman): 
 
-  > barman@db-barman:/$ barman check master-db-server
+   > barman@db-barman:/$ barman check master-db-server
 
-  > Server master-db-server:
-  > 	PostgreSQL: OK
-  > 	is_superuser: OK
-  > 	wal_level: OK
-  > 	directories: OK
-  > 	retention policy settings: OK
-  > 	backup maximum age: OK (no last_backup_maximum_age provided)
-  > 	compression settings: OK
-  > 	failed backups: OK (there are 0 failed backups)
-  > 	minimum redundancy requirements: OK (have 1 backups, expected at least 0)
-  > 	ssh: OK (PostgreSQL server)
-  > 	not in recovery: OK
-  > 	archive_mode: OK
-  > 	archive_command: OK
-  > 	archiver errors: OK
+   >   Server master-db-server:
+   >      PostgreSQL: OK
+   >      is_superuser: OK
+   >      wal_level: OK
+   >      directories: OK
+   >      retention policy settings: OK
+   >      backup maximum age: OK (no last_backup_maximum_age provided)
+   >      compression settings: OK
+   >      failed backups: OK (there are 0 failed backups)
+   >      minimum redundancy requirements: OK (have 1 backups, expected at least 0)
+   >      ssh: OK (PostgreSQL server)
+   >      not in recovery: OK
+   >      archive_mode: OK
+   >      archive_command: OK
+   >      archiver errors: OK
 
 1. Запускаем резервное копирование с основной базы (контейнер barman): 
   
@@ -112,9 +112,10 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Определяем и время завершения снятия резервной копии (контейнер barman): 
 
    > barman@db-barman:/$ barman show-backup master-db-server 20190222T210006
-   > Backup 20190222T210006:
-   > ...
-   > End time             : 2019-02-22 15:00:10.689399+00:00
+
+   >  Backup 20190222T210006:
+   >  ...
+   >  End time             : 2019-02-22 15:00:10.689399+00:00
 
    Время завершения снятия резервной копии: 2019-02-22 15:00:10.689399+00:00
 
@@ -162,10 +163,10 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    > root@db-master:/# psql -U petitions
    > petitions=> \dt
 
-   >          List of relations
-   >  Schema | Name | Type  |   Owner   
-   > --------+------+-------+-----------
-   >  public | a    | table | petitions
+   >           List of relations
+   >   Schema | Name | Type  |   Owner   
+   >  --------+------+-------+-----------
+   >   public | a    | table | petitions
 
 # Установка резервной копии на резервной базе
 
