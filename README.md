@@ -4,10 +4,10 @@
 
 Пример подготовлен на основе статьи 
 How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 7 
-(https://www.digitalocean.com/community/tutorials/how-to-back-up-restore-and-migrate-postgresql-databases-with-barman-on-centos-7)
+(www.digitalocean.com/community/tutorials/how-to-back-up-restore-and-migrate-postgresql-databases-with-barman-on-centos-7)
 
 Пример включает в себя два экземляра базы данных PostgreSql - основная и резервная, 
-а так же экземляр barman - утилиты по резервному копированию и восстановлению баз данных Postgresql (https://www.pgbarman.org).
+а так же экземляр barman - утилиты по резервному копированию и восстановлению баз данных Postgresql (www.pgbarman.org).
 
 Все три сервиса развертываеются в docker контейнерах:
 
@@ -52,27 +52,27 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
 1. Запускаем сервис основной базы (хост-машина):
 
-```
-# ./master-run.sh
-```
+   ```
+   # ./master-run.sh
+   ```
 
 1. Заходим в контейнер основной базы (хост-машина):
 
-```
-# docker exec -it db-master bash
-```
+   ```
+   # docker exec -it db-master bash
+   ```
 
 1. Создаем тестовую таблицу на основной базе (контейнер основной базы):
 
-```
-root@db-master:/# psql -U petitions
-petitions=> create table a (a number);
+   ```
+   root@db-master:/# psql -U petitions
+   petitions=> create table a (a number);
 
-        List of relations
-Schema | Name | Type  |   Owner   
---------+------+-------+-----------
-public | a    | table | petitions
-```
+           List of relations
+   Schema | Name | Type  |   Owner   
+   -------+------+-------+-----------
+   public | a    | table | petitions
+   ```
 
 # Снятие резервной копии с основной базы 
 
