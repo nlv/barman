@@ -6,7 +6,7 @@ RUN curl https://dl.2ndquadrant.com/default/release/get/deb | sudo bash
 
 RUN apt-get install -y barman-cli
 
-COPY master/initdb/* /docker-entrypoint-initdb.d/
+COPY main/initdb/* /docker-entrypoint-initdb.d/
 
 ENV BARMAN_SERVER db-barman
 
@@ -14,8 +14,8 @@ RUN useradd -m testdb
 
 RUN mkdir -p /var/lib/postgresql/.ssh
 
-ADD ssh/master.prv /var/lib/postgresql/.ssh/id_rsa
-ADD ssh/master.pub /var/lib/postgresql/.ssh/id_rsa.pub
+ADD ssh/main.prv /var/lib/postgresql/.ssh/id_rsa
+ADD ssh/main.pub /var/lib/postgresql/.ssh/id_rsa.pub
 ADD ssh/barman.pub /tmp
 
 RUN cat /tmp/barman.pub >> ~postgres/.ssh/authorized_keys && \
@@ -30,7 +30,7 @@ RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 # See: https://groups.google.com/forum/#!topic/pgbarman/SLZETx9itVQ
 RUN echo "RemoveIPC=no" >> /etc/systemd/logind.conf 
 
-COPY master/docker-entrypoint_.sh /usr/local/bin
+COPY main/docker-entrypoint_.sh /usr/local/bin
 RUN chmod 755 /usr/local/bin/docker-entrypoint_.sh
 RUN ln -s /usr/local/bin/docker-entrypoint_.sh /
 

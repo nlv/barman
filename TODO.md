@@ -1,10 +1,9 @@
 * Ключи передавать параметрами ARG
-* Для master и standby сделать один общий родительский образ
-* Переименовать master в main
+* Для main и standby сделать один общий родительский образ
 * Настройка сервисов через compose
 * Сейчас, возможно, остались настройки по ssh, которые не нужны в свзяи с использованием barman-wal-archive
-* Возможно не надо прописывать в master `echo "RemoveIPC=no" >> /etc/systemd/logind.conf`
-* barman образ основывается на том же образе, что и master (postgres), чтобы версии barman и postgres соответствовали друг другу.
+* Возможно не надо прописывать в main `echo "RemoveIPC=no" >> /etc/systemd/logind.conf`
+* barman образ основывается на том же образе, что и main (postgres), чтобы версии barman и postgres соответствовали друг другу.
   Хотя postgres на barman не нужен
 * Сделать автовыполнение процедуры (автотест?)
 

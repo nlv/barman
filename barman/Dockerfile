@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* 
 
 RUN apt-get update && apt-get install -y sudo mc barman iputils-ping ssh openssh-server
 
-ADD ssh/master.pub /tmp
+ADD ssh/main.pub /tmp
 ADD ssh/standby.pub /tmp
 
 RUN mkdir -p ~barman/.ssh && \
-    cat /tmp/master.pub >> ~barman/.ssh/authorized_keys && \
+    cat /tmp/main.pub >> ~barman/.ssh/authorized_keys && \
     cat /tmp/standby.pub >> ~barman/.ssh/authorized_keys 
 
 ADD ssh/barman.prv /var/lib/barman/.ssh/id_rsa

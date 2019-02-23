@@ -1,14 +1,14 @@
 version: '2'
 
 services:
-  db-master:
+  db-main:
     build: 
       context: .
-      dockerfile: master/Dockerfile
-    image: nlv/db-master
+      dockerfile: main/Dockerfile
+    image: nlv/db-main
     volumes:
-      - dbmaster:/var/lib/postgresql/data
-      - dbmaster_log:/var/log/postgresql
+      - dbmain:/var/lib/postgresql/data
+      - dbmain_log:/var/log/postgresql
     networks: 
       - postgres-barman
     environment:
@@ -26,8 +26,8 @@ services:
       - postgres-barman
 
 volumes: 
-  dbmaster:
-  dbmaster_log:
+  dbmain:
+  dbmain_log:
   dbbarman_var:
   dbbarman_log:
 

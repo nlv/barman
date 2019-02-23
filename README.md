@@ -11,14 +11,14 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
 Все три сервиса развертываеются в docker контейнерах:
 
-* nlv/db-master - основная база данных;
+* nlv/db-main - основная база данных;
 * nlv/db-standby - резервная база данных;
 * nlv/db-barman - утилита резервного копирования.
 
 Кроме того, дополнительно создаем два образа для удаленного доступа к файлам баз данных при остановленном сервисе СУБД
 (для копирования резервной копии).
 
-* nlv/db-master-ssh;
+* nlv/db-main-ssh;
 * nlv/db-standby-ssh.
 
 Пример резервного копирования и восстановления базы данных включает в себя следующие шаги:
@@ -43,8 +43,8 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Создаем docker-образы баз данных и сервиса резервного копирования (хост-машина):
 
    ```
-   # ./master-build.sh
-   # ./master-ssh-build.sh
+   # ./main-build.sh
+   # ./main-ssh-build.sh
    # ./standby-build.sh
    # ./standby-ssh-build.sh
    # ./barman-build.sh
@@ -55,19 +55,19 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Запускаем сервис основной базы (хост-машина):
 
    ```
-   # ./master-run.sh
+   # ./main-run.sh
    ```
 
 1. Заходим в контейнер основной базы (хост-машина):
 
    ```
-   # docker exec -it db-master bash
+   # docker exec -it db-main bash
    ```
 
 1. Создаем тестовую таблицу на основной базе (контейнер основной базы):
 
    ```
-   root@db-master:/# psql -U testdb
+   root@db-main:/# psql -U testdb
    testdb=> create table a (a int);
 
            List of relations
@@ -93,15 +93,15 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Инициализируем резервное копирование с основной базы (контейнер barman):
 
    ```
-   barman@db-barman:/$ barman switch-wal --force --archive master-db-server
+   barman@db-barman:/$ barman switch-wal --force --archive main-db-server
    ```
 
 1. Проверяем, что все в порядке (контейнер barman): 
 
    ```
-   barman@db-barman:/$ barman check master-db-server
+   barman@db-barman:/$ barman check main-db-server
    
-   Server master-db-server:
+   Server main-db-server:
       PostgreSQL: OK
       is_superuser: OK
       wal_level: OK
@@ -121,14 +121,14 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Запускаем резервное копирование с основной базы (контейнер barman): 
   
    ```
-   barman@db-barman:/$ barman backup master-db-server
+   barman@db-barman:/$ barman backup main-db-server
    ```
 
 1. Проверяем резервную копию и запоминаем её ид (контейнер barman): 
 
    ```
-   barman@db-barman:/$ barman list-backup master-db-server
-   master-db-server 20190222T210006 - Fri Feb 22 15:00:10 2019 - Size: 46.4 MiB - WAL Size: 0 B
+   barman@db-barman:/$ barman list-backup main-db-server
+   main-db-server 20190222T210006 - Fri Feb 22 15:00:10 2019 - Size: 46.4 MiB - WAL Size: 0 B
    ```
 
    Ид резервной копии: 20190222T210006.
@@ -136,7 +136,7 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Определяем и время завершения снятия резервной копии (контейнер barman): 
 
    ```
-   barman@db-barman:/$ barman show-backup master-db-server 20190222T210006
+   barman@db-barman:/$ barman show-backup main-db-server 20190222T210006
    
     Backup 20190222T210006:
     ...
@@ -150,13 +150,13 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Заходим в контейнер основной базы (хост-машина):
 
    ```
-   # docker exec -it db-master bash
+   # docker exec -it db-main bash
    ```
 
-1. Удаляем тестовую таблцу (контейнер master):
+1. Удаляем тестовую таблцу (контейнер main):
 
    ```
-   root@db-master:/# psql -U testdb
+   root@db-main:/# psql -U testdb
    testdb=> drop table a;
    testdb=> \dt
    Did not find any relations.
@@ -167,37 +167,37 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Останавливаем основную базу и запускаем ssh для доступа службы резервного копирования к основной базе (хост-машина):
 
    ```
-   # docker container stop db-master
-   # ./master-ssh-run.sh
+   # docker container stop db-main
+   # ./main-ssh-run.sh
    ```
 
 1. В контейнере db-barman запускаем процедуру восстановления основной базы данных
    (указываем ид резервной копии и время завершения снятия этой копии):
 
    ```
-   barman:/# barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-master-ssh" master-db-server 20190222T210006 /var/lib/postgresql/data
+   barman:/# barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-main-ssh" main-db-server 20190222T210006 /var/lib/postgresql/data
    ```
 
 1. В контейнере основной базы данных в настройках postgresql включаем инструкцию `archive_command` 
    (которая автоматически отключается при выполнении процедуры восстановления базы данных):
 
    ```
-   # docker exec -it db-master-ssh bash
-   root@db-master-ssh:/# vim ~postgres/data/postgresql.conf 
+   # docker exec -it db-main-ssh bash
+   root@db-main-ssh:/# vim ~postgres/data/postgresql.conf 
    ```
 
 1. Запускаем основную базу данных (хост-машина):
 
    ```
-   # docker container stop db-master-ssh
-   # docker container start db-master
+   # docker container stop db-main-ssh
+   # docker container start db-main
    ```
 
 1. Проверяем, что таблица восстановилась (контейнер основной базы):
 
    ```
-   # docker exec -it db-master bash
-   root@db-master:/# psql -U testdb
+   # docker exec -it db-main bash
+   root@db-main:/# psql -U testdb
    testdb=> \dt
    
            List of relations
@@ -225,7 +225,7 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    (указываем ид резервной копии и время завершения снятия этой копии):
 
    ```
-   barman@db-barman:/$ barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-standby-ssh" master-db-server 20190222T210006 /var/lib/postgresql/data
+   barman@db-barman:/$ barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-standby-ssh" main-db-server 20190222T210006 /var/lib/postgresql/data
    ```
 
 1. Запускаем сервис резервной базы (хост-машина):
