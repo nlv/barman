@@ -122,7 +122,7 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    barman@db-barman:/$ barman backup master-db-server
    ```
 
-1. Проверяем и запоминаем ид резервной копии (контейнер barman): 
+1. Проверяем резервную копию и запоминаем её ид (контейнер barman): 
 
    ```
    barman@db-barman:/$ barman list-backup master-db-server
@@ -176,15 +176,13 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    barman:/# barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-master" master-db-server 20190222T210006 /var/lib/postgresql/data
    ```
 
-1. В контейнере основной базы данных в настройках postgresql раскоментируем команду archive_command 
-   (которая автоматически закоментировается при выполнении процедуры восстановления быза данных сервисом barman):
+1. В контейнере основной базы данных в настройках postgresql включаем инструкцию `archive_command` 
+   (которая автоматически отключается при выполнении процедуры восстановления базы данных):
 
    ```
    # docker exec -it db-master-ssh bash
    root@db-master-ssh:/# vim ~postgres/data/postgresql.conf 
    ```
-
-   *раскоментировать archive_command*
 
 1. Запускаем основную базу данных (хост-машина):
 
@@ -221,14 +219,14 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    # ./standby-ssh-run.sh
    ```
 
-1. В контейнере db-barman запускаем процедуру восстановления копии основной базы данных на резервной
+1. В контейнере db-barman запускаем процедуру восстановления копии основной базы данных на резервную базу
    (указываем ид резервной копии и время завершения снятия этой копии):
 
    ```
    barman@db-barman:/$ barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-standby-ssh" master-db-server 20190222T210006 /var/lib/postgresql/data
    ```
 
-1. Запускаем сервис резервной базы (хост-машина)
+1. Запускаем сервис резервной базы (хост-машина):
 
    ```
    # docker container stop db-standby-ssh
