@@ -10,7 +10,7 @@ COPY master/initdb/* /docker-entrypoint-initdb.d/
 
 ENV BARMAN_SERVER db-barman
 
-RUN useradd -m petitions
+RUN useradd -m testdb
 
 RUN mkdir -p /var/lib/postgresql/.ssh
 

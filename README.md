@@ -44,7 +44,9 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
    ```
    # ./master-build.sh
+   # ./master-ssh-build.sh
    # ./standby-build.sh
+   # ./standby-ssh-build.sh
    # ./barman-build.sh
    ```
 
@@ -65,13 +67,13 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Создаем тестовую таблицу на основной базе (контейнер основной базы):
 
    ```
-   root@db-master:/# psql -U petitions
-   petitions=> create table a (a number);
+   root@db-master:/# psql -U testdb
+   testdb=> create table a (a int);
 
            List of relations
    Schema | Name | Type  |   Owner   
    -------+------+-------+-----------
-   public | a    | table | petitions
+   public | a    | table | testdb
    ```
 
 # Снятие резервной копии с основной базы 
@@ -154,9 +156,9 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 1. Удаляем тестовую таблцу (контейнер master):
 
    ```
-   root@db-master:/# psql -U petitions
-   petitions=> drop table a;
-   petitions=> \t
+   root@db-master:/# psql -U testdb
+   testdb=> drop table a;
+   testdb=> \dt
    Did not find any relations.
    ```
 
@@ -173,7 +175,7 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
    (указываем ид резервной копии и время завершения снятия этой копии):
 
    ```
-   barman:/# barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-master" master-db-server 20190222T210006 /var/lib/postgresql/data
+   barman:/# barman recover --target-time "2019-02-22 15:00:10.689399+00:00" --remote-ssh-command "ssh postgres@db-master-ssh" master-db-server 20190222T210006 /var/lib/postgresql/data
    ```
 
 1. В контейнере основной базы данных в настройках postgresql включаем инструкцию `archive_command` 
@@ -195,13 +197,13 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
    ```
    # docker exec -it db-master bash
-   root@db-master:/# psql -U petitions
-   petitions=> \dt
+   root@db-master:/# psql -U testdb
+   testdb=> \dt
    
            List of relations
    Schema | Name | Type  |   Owner   
    -------+------+-------+-----------
-   public | a    | table | petitions
+   public | a    | table | testdb
    ```
 
 # Установка резервной копии на резервной базе
@@ -237,11 +239,11 @@ How To Back Up, Restore, and Migrate PostgreSQL Databases with Barman on CentOS 
 
    ```
    # docker exec -it db-standby bash
-   root@db-standby:/# psql -U petitions
-   petitions=> \dt
+   root@db-standby:/# psql -U testdb
+   testdb=> \dt
 
            List of relations
    Schema | Name | Type  |   Owner   
    -------+------+-------+-----------
-   public | a    | table | petitions
+   public | a    | table | testdb
    ```

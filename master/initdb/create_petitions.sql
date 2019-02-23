@@ -1,3 +1,3 @@
-CREATE DATABASE petitions;
-CREATE USER petitions;
-GRANT ALL PRIVILEGES ON DATABASE petitions TO petitions;
+CREATE DATABASE testdb;
+CREATE USER testdb;
+GRANT ALL PRIVILEGES ON DATABASE testdb TO testdb;
